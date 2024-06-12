@@ -15,13 +15,13 @@ public class FacturaServicio {
     private FacturaRepositorio repositorioFactura;
 
     @Autowired
-    private RedisTemplate<String, Factura> redisTemplate;
+    private RedisTemplate<String, Factura> facturaRedisTemplate;
 
     private static final String FACTURA_CACHE_PREFIX = "FACTURA_";
 
-    public FacturaServicio(FacturaRepositorio repositorioFactura, RedisTemplate<String, Factura> redisTemplate) { // Constructor
+    public FacturaServicio(FacturaRepositorio repositorioFactura, RedisTemplate<String, Factura> facturaRedisTemplate) { // Constructor
         this.repositorioFactura = repositorioFactura;
-        this.redisTemplate = redisTemplate;
+        this.facturaRedisTemplate = facturaRedisTemplate;
     }
 
     public List<Factura> getAllFacturas() {
@@ -29,7 +29,7 @@ public class FacturaServicio {
     }
 
     public Factura getFacturaById(String id) {
-        ValueOperations<String, Factura> ops = redisTemplate.opsForValue();
+        ValueOperations<String, Factura> ops = facturaRedisTemplate.opsForValue();
         String redisKey = FACTURA_CACHE_PREFIX + id;
         Factura factura = ops.get(redisKey);
         if (factura == null) {
@@ -45,19 +45,19 @@ public class FacturaServicio {
         // Genera un ID temporal para la factura
         String tempId = UUID.randomUUID().toString();
         factura.setId(tempId);
-        ValueOperations<String, Factura> ops = redisTemplate.opsForValue(); // Guarda en cache
+        ValueOperations<String, Factura> ops = facturaRedisTemplate.opsForValue(); // Guarda en cache
         ops.set(FACTURA_CACHE_PREFIX + tempId, factura, 30, TimeUnit.MINUTES);
         return factura;
     }
 
     public Factura persistFactura(String id) { // Persiste la factura en MongoDB
-        ValueOperations<String, Factura> ops = redisTemplate.opsForValue();
+        ValueOperations<String, Factura> ops = facturaRedisTemplate.opsForValue();
         Factura factura = ops.get(FACTURA_CACHE_PREFIX + id);
         if (factura != null) {
             // Guardar en MongoDB
             Factura savedFactura = repositorioFactura.save(factura);
             // Remover de la cache
-            redisTemplate.delete(FACTURA_CACHE_PREFIX + id);
+            facturaRedisTemplate.delete(FACTURA_CACHE_PREFIX + id);
             return savedFactura;
         }
         return null;
@@ -66,19 +66,19 @@ public class FacturaServicio {
     public Factura updateFactura(String id, Factura factura) {
         factura.setId(id);
         Factura updatedFactura = repositorioFactura.save(factura); // Actualiza en MongoDB
-        ValueOperations<String, Factura> ops = redisTemplate.opsForValue(); // Actualiza en cache
+        ValueOperations<String, Factura> ops = facturaRedisTemplate.opsForValue(); // Actualiza en cache
         ops.set(FACTURA_CACHE_PREFIX + updatedFactura.getId(), updatedFactura, 30, TimeUnit.MINUTES); // Cache por 30 minutos
         return updatedFactura;
     }
 
     public void deleteFactura(String id) {
         repositorioFactura.deleteById(id);
-        redisTemplate.delete(FACTURA_CACHE_PREFIX + id);
+        facturaRedisTemplate.delete(FACTURA_CACHE_PREFIX + id);
     }
 
     public void deleteAllFacturas() { // Borra todas las facturas
         repositorioFactura.deleteAll();
-        redisTemplate.delete(FACTURA_CACHE_PREFIX + "*");
+        facturaRedisTemplate.delete(FACTURA_CACHE_PREFIX + "*");
     }
 
     public List<Factura> getFacturaByIdUsuario(String idUsuario) {

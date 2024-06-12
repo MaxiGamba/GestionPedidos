@@ -1,22 +1,20 @@
 package com.example.tpo.accessingdatamongodb.Carrito;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "carritos")
+
 public class Carrito {
-    @Id
     private String id;
     private String idUsuario;
-    private List<ItemCarrito> productos = new ArrayList<>(); // Lista de productos en el carrito
+    private List<ItemCarrito> productos; // Lista de productos en el carrito
     private String estado; //ACTIVO o FINALIZADO
 
-    public Carrito(String idUsuario, ItemCarrito producto, String estado) {
+    public Carrito(String idUsuario, List<ItemCarrito> productos, String estado) {
+        this.id = UUID.randomUUID().toString();
         this.idUsuario = idUsuario;
-        this.productos.add(producto);
+        this.productos = productos;
         this.estado = estado;
     }
 
