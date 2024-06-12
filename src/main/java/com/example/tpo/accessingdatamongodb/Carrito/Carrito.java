@@ -3,19 +3,16 @@ package com.example.tpo.accessingdatamongodb.Carrito;
 import java.util.List;
 import java.util.UUID;
 
-
-
 public class Carrito {
     private String id;
     private String idUsuario;
     private List<ItemCarrito> productos; // Lista de productos en el carrito
     private String estado; //ACTIVO o FINALIZADO
 
-    public Carrito(String idUsuario, List<ItemCarrito> productos, String estado) {
-        this.id = UUID.randomUUID().toString();
+    public Carrito(String idUsuario, List<ItemCarrito> productos) {
+        this.id = UUID.randomUUID().toString(); // Genera un id aleatorio
         this.idUsuario = idUsuario;
         this.productos = productos;
-        this.estado = estado;
     }
 
     public Carrito() {

@@ -17,7 +17,7 @@ public class Factura {
     private String formaPago;
     private String estado; // PENDIENTE o PAGADA
 
-    public Factura(String idPedido, String idUsuario, double total, String fecha, String hora, String formaPago, String estado) {
+    public Factura( String idPedido, String idUsuario, double total, String formaPago, String estado) {
         this.idPedido = idPedido;
         this.idUsuario = idUsuario;
         this.total = total;

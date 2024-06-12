@@ -12,7 +12,6 @@ public class ProductoServicio {
     private final ProductoRepositorio repositorioProducto;
     private final RegistroActividadServicio servicioRegistroActividad; // Servicio de registro de actividad
 
-    
     public ProductoServicio(ProductoRepositorio repositorioProducto, RegistroActividadServicio servicioRegistroActividad) { // Constructor de la clase
         this.repositorioProducto = repositorioProducto;
         this.servicioRegistroActividad = servicioRegistroActividad;

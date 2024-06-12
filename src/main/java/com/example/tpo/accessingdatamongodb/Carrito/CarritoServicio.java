@@ -39,6 +39,7 @@ public class CarritoServicio {
     public Carrito createCarrito(Carrito carrito) {
         ValueOperations<String, Carrito> ops = carritoRedisTemplate.opsForValue();
         ops.set(CARRO_CACHE_PREFIX + carrito.getId(), carrito, 30, TimeUnit.MINUTES);
+        carrito.setEstado("ACTIVO"); // Estado inicial del carrito
         return carrito;
     }
 

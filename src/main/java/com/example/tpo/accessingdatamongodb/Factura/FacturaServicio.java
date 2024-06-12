@@ -9,19 +9,22 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import com.example.tpo.accessingdatamongodb.Pedido.*;
+
 @Service
 public class FacturaServicio {
-    @Autowired
-    private FacturaRepositorio repositorioFactura;
+    private final FacturaRepositorio repositorioFactura;
+    private final PedidoServicio servicioPedido;
 
     @Autowired
     private RedisTemplate<String, Factura> facturaRedisTemplate;
 
     private static final String FACTURA_CACHE_PREFIX = "FACTURA_";
 
-    public FacturaServicio(FacturaRepositorio repositorioFactura, RedisTemplate<String, Factura> facturaRedisTemplate) { // Constructor
+    public FacturaServicio(FacturaRepositorio repositorioFactura, RedisTemplate<String, Factura> facturaRedisTemplate, PedidoServicio servicioPedido) { // Constructor
         this.repositorioFactura = repositorioFactura;
         this.facturaRedisTemplate = facturaRedisTemplate;
+        this.servicioPedido = servicioPedido;
     }
 
     public List<Factura> getAllFacturas() {
@@ -41,7 +44,13 @@ public class FacturaServicio {
         return factura;
     }
 
-    public Factura createFactura(Factura factura) {
+    public Factura createFactura(String idPedido, String formaPago) {
+        Pedido pedido = servicioPedido.getPedidoById(idPedido); // Obtiene el pedido por id
+        pedido.setEstado("FACTURADO"); // Cambia el estado del pedido a FACTURADO
+        servicioPedido.updatePedido(idPedido, pedido); // Actualiza el pedido
+
+        Factura factura = new Factura(idPedido, pedido.getIdUsuario(), pedido.getTotal(), formaPago, "PENDIENTE"); // Crea la factura
+        
         // Genera un ID temporal para la factura
         String tempId = UUID.randomUUID().toString();
         factura.setId(tempId);

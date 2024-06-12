@@ -17,7 +17,7 @@ public class Pago {
     private String formaPago; // EFECTIVO, TARJETA, CTA_CTE
     private String operador;
 
-    public Pago(String idFactura, String idUsuario, double monto, String fecha, String hora, String formaPago, String operador) {
+    public Pago(String idFactura, String idUsuario, double monto, String formaPago, String operador) {
         this.idFactura = idFactura;
         this.idUsuario = idUsuario;
         this.monto = monto;

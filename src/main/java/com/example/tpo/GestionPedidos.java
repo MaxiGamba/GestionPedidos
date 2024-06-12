@@ -8,7 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.example.tpo.accessingdatamongodb.Carrito.*;
 import com.example.tpo.accessingdatamongodb.Factura.*;
-import com.example.tpo.accessingdatamongodb.Factura.FacturaServicio;
+import com.example.tpo.accessingdatamongodb.Pago.*;
+import com.example.tpo.accessingdatamongodb.Pedido.*;
 import com.example.tpo.accessingdatamongodb.Producto.*;
 import com.example.tpo.accessingdatamongodb.RegistroActividad.*;
 import com.example.tpo.accessingdatamongodb.Usuario.*;
@@ -21,17 +22,19 @@ public class GestionPedidos implements CommandLineRunner {
 	private final ProductoServicio servicioProducto;
 	private final RegistroActividadServicio servicioRegistroActividad;
 	private final CarritoServicio servicioCarrito;
+	private final PedidoServicio servicioPedido;
 	private final FacturaServicio servicioFactura;
-
+	private final PagoServicio servicioPago;
 
 	// Constructor de clases de servicios
-	public GestionPedidos(UsuarioServicio servicioUsuario, ProductoServicio servicioProducto, RegistroActividadServicio servicioRegistroActividad, CarritoServicio servicioCarrito, FacturaServicio servicioFactura) {
+	public GestionPedidos(UsuarioServicio servicioUsuario, ProductoServicio servicioProducto, RegistroActividadServicio servicioRegistroActividad, CarritoServicio servicioCarrito,PedidoServicio servicioPedido, FacturaServicio servicioFactura, PagoServicio servicioPago) {
 		this.servicioUsuario = servicioUsuario;
 		this.servicioProducto = servicioProducto;
 		this.servicioRegistroActividad = servicioRegistroActividad;
 		this.servicioCarrito = servicioCarrito;
+		this.servicioPedido = servicioPedido;
 		this.servicioFactura = servicioFactura;
-
+		this.servicioPago = servicioPago;
 	}
 
 	public static void main(String[] args) {		// Inicia el programa
@@ -46,7 +49,9 @@ public class GestionPedidos implements CommandLineRunner {
 		servicioProducto.deleteAllProductos();
 		servicioRegistroActividad.deleteAllRegistros();
 		servicioCarrito.deleteAllCarritos();
+		servicioPedido.deleteAllPedidos();
 		servicioFactura.deleteAllFacturas();
+		servicioPago.deleteAllPagos();
 		
 
 
@@ -69,12 +74,18 @@ public class GestionPedidos implements CommandLineRunner {
 
 		// Crea un carrito con la coca cola actualizada
 		ItemCarrito item1 = new ItemCarrito(coca_cola_actualizada.getId(), 2, coca_cola_actualizada.getPrecio());
-		servicioCarrito.createCarrito(new Carrito("66691c39fd538f2d3f2985ad", Arrays.asList(item1), "ACTIVO"));
+		Carrito carrito_coca = new Carrito("66691c39fd538f2d3f2985ad", Arrays.asList(item1));
+		servicioCarrito.createCarrito(carrito_coca);
 
-		// Crea una factura con el carrito
-		Factura factura_coca = new Factura("66691c39fd538f2d3f2985ad", "46821497", 200, "2021-06-01", "12:00", "Efectivo", "PAGADA");
-		servicioFactura.createFactura(factura_coca);
+		// Crea un pedido con el carrito
+		Pedido pedido_coca = servicioPedido.createPedido(carrito_coca.getId(), 50, 100);
+
+		// Crea una factura con el pedido
+		Factura factura_coca = servicioFactura.createFactura(pedido_coca.getId(), "TARJETA DE CREDITO");
 		servicioFactura.persistFactura(factura_coca.getId());
+
+		// Crea un pago con la factura
+		servicioPago.createPago(factura_coca.getId(), "TARJETA DE CREDITO", "Gabriel Diaz");
 
 		// Muestra todo lo generado
 		System.out.println();
@@ -92,12 +103,14 @@ public class GestionPedidos implements CommandLineRunner {
 		System.out.println(servicioCarrito.getAllCarritos()); // Muestra todos los carritos
 		System.out.println();
 		System.out.println();
+		System.out.println(servicioPedido.getAllPedidos()); // Muestra todos los carritos
+		System.out.println();
+		System.out.println();
 		System.out.println(servicioFactura.getAllFacturas()); // Muestra todas las facturas
 		System.out.println();
 		System.out.println();
-		System.out.println(servicioFactura.getFacturaByEstado("PAGADA")); // Muestra todas las facturas pagadas
-		
-
+		System.out.println(servicioPago.getAllPagos()); // Muestra todos los carritos
+		System.out.println();
 		
 		/*
 		// fetch an individual customer

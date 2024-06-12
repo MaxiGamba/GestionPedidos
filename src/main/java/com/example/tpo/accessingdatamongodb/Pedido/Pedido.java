@@ -16,13 +16,13 @@ public class Pedido {
     private double descuentos;
     private double impuestos;
 
-    public Pedido(String idUsuario, List<ItemPedido> productos, String estado, double total, double descuentos, double impuestos) {
+    public Pedido(String idUsuario, String estado, List<ItemPedido> productos, double descuentos, double impuestos, double total) {
         this.idUsuario = idUsuario;
-        this.productos = productos;
         this.estado = estado;
-        this.total = total;
+        this.productos = productos;
         this.descuentos = descuentos;
         this.impuestos = impuestos;
+        this.total = total;
     }
 
     public Pedido() {
