@@ -1,5 +1,6 @@
 package com.example.tpo.accessingdatamongodb.Carrito;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -10,12 +11,12 @@ public class Carrito {
     @Id
     private String id;
     private String idUsuario;
-    private List<ItemCarrito> productos;
+    private List<ItemCarrito> productos = new ArrayList<>();
     private String estado; //ACTIVO o FINALIZADO
 
-    public Carrito(String idUsuario, List<ItemCarrito> productos, String estado) {
+    public Carrito(String idUsuario, ItemCarrito producto, String estado) {
         this.idUsuario = idUsuario;
-        this.productos = productos;
+        this.productos.add(producto);
         this.estado = estado;
     }
 

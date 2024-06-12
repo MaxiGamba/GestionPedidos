@@ -6,29 +6,32 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.example.tpo.accessingdatamongodb.Carrito.*;
 import com.example.tpo.accessingdatamongodb.Producto.*;
 import com.example.tpo.accessingdatamongodb.RegistroActividad.*;
 import com.example.tpo.accessingdatamongodb.Usuario.*;
 
 @SpringBootApplication
-public class Tpo implements CommandLineRunner {
+public class GestionPedidos implements CommandLineRunner {
 
 	// Crea servicios
 	private final UsuarioServicio servicioUsuario;
 	private final ProductoServicio servicioProducto;
 	private final RegistroActividadServicio servicioRegistroActividad;
+	private final CarritoServicio servicioCarrito;
 
 
 	// Constructor de clases de servicios
-	public Tpo(UsuarioServicio servicioUsuario, ProductoServicio servicioProducto, RegistroActividadServicio servicioRegistroActividad) {
+	public GestionPedidos(UsuarioServicio servicioUsuario, ProductoServicio servicioProducto, RegistroActividadServicio servicioRegistroActividad, CarritoServicio servicioCarrito) {
 		this.servicioUsuario = servicioUsuario;
 		this.servicioProducto = servicioProducto;
 		this.servicioRegistroActividad = servicioRegistroActividad;
+		this.servicioCarrito = servicioCarrito;
 
 	}
 
 	public static void main(String[] args) {		// Inicia el programa
-		SpringApplication.run(Tpo.class, args);
+		SpringApplication.run(GestionPedidos.class, args);
 	}
 
 	@Override
@@ -38,6 +41,7 @@ public class Tpo implements CommandLineRunner {
 		servicioUsuario.deleteAllUsuarios();
 		servicioProducto.deleteAllProductos();
 		servicioRegistroActividad.deleteAllRegistros();
+		servicioCarrito.deleteAllCarritos();
 
 
 		// Guarda algunas instancias
@@ -57,6 +61,11 @@ public class Tpo implements CommandLineRunner {
 		Producto coca_cola_actualizada = new Producto("Coca Cola", "Bebida gaseosa grande", 250, null, null, Arrays.asList("Muy rica", "Me encanta"));
 		servicioProducto.updateProducto(servicioProducto.getProductoByNombre("Coca Cola").getId(), coca_cola_actualizada, "Gabriel Diaz");
 
+		// Crea un carrito con la coca cola actualizada
+		ItemCarrito item1 = new ItemCarrito(coca_cola_actualizada.getId(), 2, coca_cola_actualizada.getPrecio());
+		servicioCarrito.createCarrito(new Carrito("66691c39fd538f2d3f2985ad", item1, "ACTIVO"));
+
+
 		// Muestra todo lo generado
 		System.out.println();
 		System.out.println("-------------------------------------------------------------------");
@@ -70,7 +79,8 @@ public class Tpo implements CommandLineRunner {
 		System.out.println();
 		System.out.println(servicioRegistroActividad.getAllRegistros()); // Muestra todos los registros de actividad
 		System.out.println();
-
+		System.out.println(servicioCarrito.getAllCarritos()); // Muestra todos los carritos
+		System.out.println();
 		
 
 		
