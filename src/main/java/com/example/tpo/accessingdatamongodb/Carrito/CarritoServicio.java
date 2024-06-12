@@ -6,65 +6,57 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class CarritoServicio {
-    @Autowired
-    private CarritoRepositorio repositorioCarrito;
-
     @Autowired
     private RedisTemplate<String, Carrito> redisTemplate; // Inyección de dependencia redisTemplate
 
     private static final String CARRO_CACHE_PREFIX = "CARRITO_"; // Prefijo para la cache
 
-    public CarritoServicio(CarritoRepositorio repositorioCarrito, RedisTemplate<String, Carrito> redisTemplate) { // Constructor de la clase
-        this.repositorioCarrito = repositorioCarrito;
+    public CarritoServicio(RedisTemplate<String, Carrito> redisTemplate) { // Constructor de la clase
         this.redisTemplate = redisTemplate;
     }
 
     public List<Carrito> getAllCarritos() {
-        return repositorioCarrito.findAll();
+        Set<String> keys = redisTemplate.keys(CARRO_CACHE_PREFIX + "*");
+        List<Carrito> carritos = keys.stream()
+            .map(key -> (Carrito) redisTemplate.opsForValue().get(key))
+            .collect(Collectors.toList());
+        return carritos;
     }
 
     public Carrito getCarritoById(String id) {
         ValueOperations<String, Carrito> ops = redisTemplate.opsForValue();
         String redisKey = CARRO_CACHE_PREFIX + id;
         Carrito carrito = ops.get(redisKey);
-        if (carrito == null) {
-            carrito = repositorioCarrito.findById(id).orElse(null);
-            if (carrito != null) {
-                ops.set(redisKey, carrito, 30, TimeUnit.MINUTES); // Cache por 30 minutos
-            }
-        }
         return carrito;
     }
 
     public Carrito createCarrito(Carrito carrito) {
-        Carrito savedCarrito = repositorioCarrito.save(carrito);
         ValueOperations<String, Carrito> ops = redisTemplate.opsForValue();
-        ops.set(CARRO_CACHE_PREFIX + savedCarrito.getId(), savedCarrito, 30, TimeUnit.MINUTES);
-        return savedCarrito;
+        ops.set(CARRO_CACHE_PREFIX + carrito.getId(), carrito, 30, TimeUnit.MINUTES);
+        return carrito;
     }
 
     public Carrito updateCarrito(String id, Carrito carrito) {
         carrito.setId(id);
-        Carrito updatedCarrito = repositorioCarrito.save(carrito);
         ValueOperations<String, Carrito> ops = redisTemplate.opsForValue();
-        ops.set(CARRO_CACHE_PREFIX + updatedCarrito.getId(), updatedCarrito, 30, TimeUnit.MINUTES);
-        return updatedCarrito;
+        ops.set(CARRO_CACHE_PREFIX + carrito.getId(), carrito, 30, TimeUnit.MINUTES);
+        return carrito;
     }
 
     public void deleteCarrito(String id) {
-        repositorioCarrito.deleteById(id);
         redisTemplate.delete(CARRO_CACHE_PREFIX + id);
     }
 
     
     public void deleteAllCarritos() { // Método para eliminar todos los carritos
-        repositorioCarrito.deleteAll();
         redisTemplate.delete(CARRO_CACHE_PREFIX + "*");
-    }    
+    }   
 
     public Carrito addItemToCarrito(String carritoId, ItemCarrito itemCarrito) {
         Carrito carrito = getCarritoById(carritoId);
@@ -109,14 +101,18 @@ public class CarritoServicio {
     }
 
     public List<Carrito> getCarritosByUserId(String userId) {
-        return repositorioCarrito.findByIdUsuario(userId);
+    Set<String> keys = redisTemplate.keys(CARRO_CACHE_PREFIX + userId + "*");
+    List<Carrito> carritos = keys.stream()
+        .map(key -> (Carrito) redisTemplate.opsForValue().get(key))
+        .collect(Collectors.toList());
+    return carritos;
     }
 
-    public List<Carrito> getCarritosByProductId(String productId) { // Método para obtener carritos por id de producto
-        return repositorioCarrito.findByIdProducto(productId);
-    }
-
-    public List<Carrito> getCarritosByState(String state) { // Método para obtener carritos por estado
-        return repositorioCarrito.findByEstado(state);
+public List<Carrito> getCarritosByState(String state) {
+    Set<String> keys = redisTemplate.keys(CARRO_CACHE_PREFIX + "*" + state + "*");
+    List<Carrito> carritos = keys.stream()
+        .map(key -> (Carrito) redisTemplate.opsForValue().get(key))
+        .collect(Collectors.toList());
+    return carritos;
     }
 }

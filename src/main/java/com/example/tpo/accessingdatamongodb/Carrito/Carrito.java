@@ -11,7 +11,7 @@ public class Carrito {
     @Id
     private String id;
     private String idUsuario;
-    private List<ItemCarrito> productos = new ArrayList<>();
+    private List<ItemCarrito> productos = new ArrayList<>(); // Lista de productos en el carrito
     private String estado; //ACTIVO o FINALIZADO
 
     public Carrito(String idUsuario, ItemCarrito producto, String estado) {
