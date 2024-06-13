@@ -51,7 +51,7 @@ public class RegistroActividadServicio {
         return repositorioRegistroActividad.findByOperador(operador);
     }
 
-    public List<RegistroActividad> getRegistroByFecha(Date fecha) {
+    public List<RegistroActividad> getRegistroByFecha(String fecha) {
         return repositorioRegistroActividad.findByFecha(fecha);
     }
 }

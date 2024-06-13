@@ -9,6 +9,6 @@ public interface RegistroActividadRepositorio extends MongoRepository<RegistroAc
 
     List<RegistroActividad> findByCampoModificado(String campoModificado);
     List<RegistroActividad> findByOperador(String operador);
-    List<RegistroActividad> findByFecha(Date fecha);
+    List<RegistroActividad> findByFecha(String fecha);
 
 }
