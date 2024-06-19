@@ -1,6 +1,6 @@
 package com.example.tpo.accessingdatamongodb.Pago;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,21 +9,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Pago {
     @Id
     private String id;
-    private String idFactura;
+    private List<String> idFacturas;
     private String idUsuario;
     private double monto;
     private String fecha;
     private String hora;
-    private String formaPago; // EFECTIVO, TARJETA, CTA_CTE
+    private String formaPago; // // EFECTIVO, TARJETA DEBITO/CREDITO o CUENTA CORRIENTE
     private String operador;
 
-    public Pago(String idFactura, String idUsuario, double monto, String formaPago, String operador) {
-        this.idFactura = idFactura;
+    public Pago(List<String> idFacturas, String idUsuario, double monto, String fecha, String hora, String formaPago, String operador) {
+        this.idFacturas = idFacturas;
         this.idUsuario = idUsuario;
         this.monto = monto;
-        LocalDateTime fechaHora = LocalDateTime.now(); // Obtiene la fecha y hora actual
-        this.fecha = (fechaHora.toLocalDate().toString()); // Guarda la fecha
-        this.hora = (fechaHora.toLocalTime().toString()); // Guarda la hora
+        this.fecha = fecha;
+        this.hora = hora;
         this.formaPago = formaPago;
         this.operador = operador;
     }
@@ -35,8 +34,8 @@ public class Pago {
         return id;
     }
 
-    public String getIdFactura() {
-        return idFactura;
+    public List<String> getidFacturas() {
+        return idFacturas;
     }
 
     public String getIdUsuario() {
@@ -67,8 +66,8 @@ public class Pago {
         this.id = id;
     }
 
-    public void setIdFactura(String idFactura) {
-        this.idFactura = idFactura;
+    public void setIdFacturas(List<String> idFacturas) {
+        this.idFacturas = idFacturas;
     }
 
     public void setIdUsuario(String idUsuario) {
@@ -99,7 +98,7 @@ public class Pago {
     public String toString() {
         return "Pago{" +
                 "id='" + id + '\'' +
-                ", idFactura='" + idFactura + '\'' +
+                ", idFacturas='" + String.join(", ", idFacturas) + '\'' +
                 ", idUsuario='" + idUsuario + '\'' +
                 ", monto=" + monto +
                 ", fecha=" + fecha +

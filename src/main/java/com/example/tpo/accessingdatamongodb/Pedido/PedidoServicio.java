@@ -27,10 +27,10 @@ public class PedidoServicio {
         return repositorioPedido.findById(id).orElse(null);
     }
 
-    public Pedido createPedido(String carritoId, double descuentos, double impuestos) {
-        Carrito carrito = servicioCarrito.getCarritoById(carritoId); // Obtiene el carrito por id
+    public Pedido createPedido(String idCarrito, double descuentos, double impuestos) {
+        Carrito carrito = servicioCarrito.getCarritoById(idCarrito); // Obtiene el carrito por id
         carrito.setEstado("FINALIZADO"); // Cambia el estado del carrito a FINALIZADO
-        servicioCarrito.updateCarrito(carritoId, carrito); // Actualiza el carrito
+        servicioCarrito.updateCarrito(idCarrito, carrito); // Actualiza el carrito
 
         double precioOriginal = 0.0; // Inicializa el precio original en 0
         List<ItemPedido> productosPedido = new ArrayList<>();

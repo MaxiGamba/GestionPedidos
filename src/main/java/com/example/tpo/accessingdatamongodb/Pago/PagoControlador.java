@@ -24,8 +24,8 @@ public class PagoControlador {
     }
 
     @PostMapping
-    public Pago createPago(@RequestParam String idFactura, @RequestParam String formaPago, @RequestParam String operador) {
-        return pagoServicio.createPago(idFactura, formaPago, operador);
+    public Pago createPago(@RequestParam List<String> idFacturas, @RequestParam String formaPago, @RequestParam String operador) {
+        return pagoServicio.createPago(idFacturas, formaPago, operador);
     }
 
     @PutMapping("/{id}")

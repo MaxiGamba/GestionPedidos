@@ -1,5 +1,7 @@
 package com.example.tpo.accessingdatamongodb.Usuario;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,26 +9,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Usuario {
     @Id
     private String id;
+    @NotEmpty(message = "El nombre no puede estar vacío")
     private String nombre;
-    private String apellido;
+    
+    @NotEmpty(message = "La dirección no puede estar vacía")
     private String direccion;
+    
+    @NotEmpty(message = "El documento de identidad no puede estar vacío")
     private String documentoIdentidad;
+    
+    @NotEmpty(message = "La contraseña no puede estar vacía")
+    private String password;
     private int tiempoConectado;
     private String categoria;
     
-    public Usuario(String nombre, String apellido, String direccion, String documentoIdentidad, int tiempoConectado) {
+    public Usuario(String nombre, String password , String direccion, String documentoIdentidad) {
         this.nombre = nombre;
-        this.apellido = apellido;
+        this.password = password;
         this.direccion = direccion;
         this.documentoIdentidad = documentoIdentidad;
-        this.tiempoConectado = tiempoConectado;
-        if(tiempoConectado >= 240) {
-            this.categoria = "TOP";
-        } else if(tiempoConectado >= 120) {
-            this.categoria = "MEDIUM";
-        } else {
-            this.categoria = "LOW";
-        }
+        this.tiempoConectado = 0;
+        this.categoria = "LOW";
     }
 
     public Usuario() {
@@ -40,8 +43,8 @@ public class Usuario {
         return nombre;
     }
 
-    public String getApellido() {
-        return apellido;
+    public String getPassword() {
+        return password;
     }
 
     public String getDireccion() {
@@ -68,8 +71,8 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setDireccion(String direccion) {
@@ -93,7 +96,6 @@ public class Usuario {
         return "Usuario{" +
                 "id='" + id + '\'' +
                 ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
                 ", direccion='" + direccion + '\'' +
                 ", documentoIdentidad='" + documentoIdentidad + '\'' +
                 ", tiempoConectado=" + tiempoConectado +

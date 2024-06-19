@@ -1,5 +1,6 @@
 package com.example.tpo.accessingdatamongodb.Pago;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -24,12 +25,40 @@ public class PagoServicio {
         return repositorioPago.findById(id).orElse(null);
     }
 
-    public Pago createPago(String idFactura, String formaPago, String operador) {
-        Factura factura = servicioFactura.getFacturaById(idFactura); // Obtiene la factura por id
-        factura.setEstado("PAGADA"); // Cambia el estado de la factura a PAGADA
-        servicioFactura.updateFactura(idFactura, factura); // Actualiza la factura
+    public Pago createPago(List<String> idFacturas, String formaPago, String operador) {
+        if( (!formaPago.toUpperCase().equals("EFECTIVO") && !formaPago.toUpperCase().equals("TARJETA DEBITO") && !formaPago.toUpperCase().equals("CUENTA CORRIENTE") && !formaPago.toUpperCase().equals("TARJETA CREDITO") ) || formaPago == null){
+            System.out.println("Forma de pago inválida");
+            return null;
+        }
 
-        return repositorioPago.save(new Pago(idFactura, factura.getIdUsuario(), factura.getTotal(), formaPago, operador));
+        double total = 0;
+        String idUsuario = "";
+        Factura factura = servicioFactura.getFacturaById(idFacturas.get(0));
+        Factura factura2 = servicioFactura.getFacturaById(idFacturas.get(0));
+
+        for (String idFactura : idFacturas) {
+            factura = servicioFactura.getFacturaById(idFactura); // Obtiene la factura por id
+            if (!factura.getIdUsuario().equals(factura2.getIdUsuario())) {
+                System.out.println("Las facturas no pertenecen al mismo usuario, no se puede realizar el pago");
+                return null;
+            }
+            factura2 = servicioFactura.getFacturaById(idFactura);
+
+            if (factura != null) {
+                factura.setEstado("PAGADA"); // Cambia el estado de la factura a PAGADA
+                servicioFactura.updateFactura(idFactura, factura); // Actualiza la factura
+                total += factura.getTotal();
+                idUsuario = factura.getIdUsuario();
+            }
+        }
+        if(idUsuario.equals("")){ // Si todas las facturas no existen
+            System.err.println("No se puede realizar el pago, las facturas no existen");
+            return null;
+        }
+        LocalDateTime fechaHora = LocalDateTime.now(); // Obtiene la fecha y hora actual
+        String fecha = (fechaHora.toLocalDate().toString()); // Guarda la fecha
+        String hora = (fechaHora.toLocalTime().toString()); // Guarda la hora
+        return repositorioPago.save(new Pago(idFacturas, idUsuario, total, fecha, hora, formaPago.toUpperCase(), operador));
     }
 
     public Pago updatePago(String id, Pago pago) {

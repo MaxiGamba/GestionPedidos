@@ -29,11 +29,6 @@ public class FacturaControlador {
         return facturaServicio.createFactura(idPedido, formaPago);
     }
 
-    @PostMapping("/persist/{id}")
-    public Factura persistFactura(@PathVariable String id) {
-        return facturaServicio.persistFactura(id);
-    }
-
     @PutMapping("/{id}")
     public Factura updateFactura(@PathVariable String id, @RequestBody Factura factura) {
         return facturaServicio.updateFactura(id, factura);

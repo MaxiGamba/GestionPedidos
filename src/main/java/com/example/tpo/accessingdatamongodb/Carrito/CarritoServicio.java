@@ -5,8 +5,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -37,14 +39,18 @@ public class CarritoServicio {
     }
 
     public Carrito createCarrito(Carrito carrito) {
+        carrito.setId(UUID.randomUUID().toString());
+        carrito.setEstado("ACTIVO"); // Establece el estado del carrito como ACTIVO
+        carrito.setFechaCreacion(LocalDate.now().toString()); // Establece la fecha de creación del carrito
+        carrito.setFechaModificacion(null);
         ValueOperations<String, Carrito> ops = carritoRedisTemplate.opsForValue();
         ops.set(CARRO_CACHE_PREFIX + carrito.getId(), carrito, 30, TimeUnit.MINUTES);
-        carrito.setEstado("ACTIVO"); // Estado inicial del carrito
         return carrito;
     }
 
     public Carrito updateCarrito(String id, Carrito carrito) {
         carrito.setId(id);
+        carrito.setFechaModificacion(LocalDate.now().toString()); // Establece la fecha de modificación del carrito
         ValueOperations<String, Carrito> ops = carritoRedisTemplate.opsForValue();
         ops.set(CARRO_CACHE_PREFIX + carrito.getId(), carrito, 30, TimeUnit.MINUTES);
         return carrito;
@@ -54,7 +60,6 @@ public class CarritoServicio {
         carritoRedisTemplate.delete(CARRO_CACHE_PREFIX + id);
     }
 
-    
     public void deleteAllCarritos() { // Método para borrar todos los carritos
         Set<String> keys = carritoRedisTemplate.keys(CARRO_CACHE_PREFIX + "*"); // Obtiene las claves de los carritos
         if (keys != null && !keys.isEmpty()) { // Si hay carritos

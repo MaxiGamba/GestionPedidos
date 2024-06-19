@@ -24,8 +24,8 @@ public class PedidoControlador {
     }
 
     @PostMapping
-    public Pedido createPedido(@RequestParam String carritoId, @RequestParam double descuentos, @RequestParam double impuestos) {
-        return pedidoServicio.createPedido(carritoId, descuentos, impuestos);
+    public Pedido createPedido(@RequestParam String idCarrito, @RequestParam double descuentos, @RequestParam double impuestos) {
+        return pedidoServicio.createPedido(idCarrito, descuentos, impuestos);
     }
 
     @PutMapping("/{id}")

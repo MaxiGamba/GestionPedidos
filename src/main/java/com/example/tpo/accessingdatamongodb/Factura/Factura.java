@@ -1,6 +1,7 @@
 package com.example.tpo.accessingdatamongodb.Factura;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,21 +10,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Factura {
     @Id
     private String id;
+    @NotEmpty(message = "El ID del pedido no puede estar vacío")
     private String idPedido;
     private String idUsuario;
     private double total;
     private String fecha;
     private String hora;
-    private String formaPago;
+    @NotNull(message = "La forma de pago no puede ser nula")
+    private String formaPago; // EFECTIVO, TARJETA DEBITO/CREDITO o CUENTA CORRIENTE
     private String estado; // PENDIENTE o PAGADA
 
-    public Factura( String idPedido, String idUsuario, double total, String formaPago, String estado) {
+    public Factura( String idPedido, String idUsuario, double total, String fecha, String hora, String formaPago, String estado) {
         this.idPedido = idPedido;
         this.idUsuario = idUsuario;
         this.total = total;
-        LocalDateTime fechaHora = LocalDateTime.now(); // Obtiene la fecha y hora actual
-        this.fecha = (fechaHora.toLocalDate().toString()); // Guarda la fecha
-        this.hora = (fechaHora.toLocalTime().toString()); // Guarda la hora
+        this.fecha = fecha;
+        this.hora = hora;
         this.formaPago = formaPago;
         this.estado = estado;
     }
